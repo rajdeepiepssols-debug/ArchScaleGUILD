@@ -220,7 +220,7 @@
   <div class="grid">
     <div class="panel">
       <h2>CAPTURE A CONVERSATION</h2>
-      <div class="hint">paste text, or attach a screenshot / PDF — SiteLine reads it once and files it forever</div>
+      <div class="hint">paste text, or attach a screenshot, voice message, or video — SiteLine reads it once and files it forever</div>
 
       <label>SOURCE</label>
       <select id="sourceType">
@@ -230,6 +230,7 @@
         <option>Call transcript</option>
         <option>Voice note transcript</option>
         <option>Voice message (audio file)</option>
+        <option>Video</option>
         <option>Image / Screenshot</option>
         <option>Other</option>
       </select>
@@ -240,8 +241,8 @@
       <label>RAW TEXT <span style="color:var(--text-dark-bg-soft);">(optional if attaching a file)</span></label>
       <textarea id="rawInput" placeholder="Paste the conversation, transcript or notes here..."></textarea>
 
-      <label>ATTACH SCREENSHOT, PDF, OR VOICE MESSAGE <span style="color:var(--text-dark-bg-soft);">(optional)</span></label>
-      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,audio/flac">
+      <label>ATTACH SCREENSHOT, VOICE MESSAGE, OR VIDEO <span style="color:var(--text-dark-bg-soft);">(optional — PDF not currently supported)</span></label>
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/gif,audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,audio/flac,video/mp4,video/webm,video/quicktime">
       <div class="filerow" id="fileRow" style="display:none;">
         <span id="fileName" style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;"></span>
         <button class="ghost clearfile" id="clearFileBtn">clear</button>
@@ -526,16 +527,19 @@ function refreshNameList(){
 }
 
 /* ---------------------------------------------------------------- */
-/* GEMINI API (via this app's own backend)                            */
+/* GROQ API (via this app's own backend) — was callGeminiMessage,     */
+/* hitting /api/gemini. Now hits /api/groq; response shape from the   */
+/* backend is unchanged ({content:[{text}]}) so nothing else here     */
+/* needed to change.                                                   */
 /* ---------------------------------------------------------------- */
-async function callGeminiMessage(content, maxTokens, retries){
+async function callGroqMessage(content, maxTokens, retries){
   maxTokens = maxTokens || 1000;
   retries = retries === undefined ? 2 : retries;
   let lastErr;
 
   for(let attempt=0; attempt<=retries; attempt++){
     try{
-      const response = await fetch("/api/gemini", {
+      const response = await fetch("/api/groq", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -579,7 +583,7 @@ async function callGeminiMessage(content, maxTokens, retries){
 }
 
 function buildExtractionPrompt(sourceType, sourceDate, rawText, hasFile){
-  return `You are an assistant embedded in a construction/architecture project management tool. You will be given a raw, unstructured project communication (source type: ${sourceType}). ${hasFile ? 'It is attached as an image, PDF, or audio recording — read or listen to it carefully first.' : ''} The conversation took place on ${sourceDate}.
+  return `You are an assistant embedded in a construction/architecture project management tool. You will be given a raw, unstructured project communication (source type: ${sourceType}). ${hasFile ? 'It is attached as an image, voice message, or video (video content is analyzed from its transcribed audio only, not its visuals) — read or listen to it carefully first.' : ''} The conversation took place on ${sourceDate}.
 
 Return ONLY a single valid JSON object, no markdown fences, no preamble. Use exactly this shape:
 
@@ -648,7 +652,7 @@ async function handleFileChosen(file){
     r.readAsDataURL(file);
   });
   attachedFile = {name:file.name, mime:file.type, base64};
-  const icon = file.type.startsWith('audio/') ? '🎤' : '📎';
+  const icon = file.type.startsWith('audio/') ? '🎤' : file.type.startsWith('video/') ? '🎥' : '📎';
   document.getElementById('fileName').textContent = icon + ' ' + file.name;
   document.getElementById('fileRow').style.display = 'flex';
 }
@@ -678,8 +682,8 @@ async function processConversation(){
     let content;
     if(attachedFile){
       let block;
-      if(attachedFile.mime === 'application/pdf'){
-        block = {type:'document', source:{type:'base64', media_type:'application/pdf', data: attachedFile.base64}};
+      if(attachedFile.mime.startsWith('video/')){
+        block = {type:'video', source:{type:'base64', media_type: attachedFile.mime, data: attachedFile.base64}};
       } else if(attachedFile.mime.startsWith('audio/')){
         block = {type:'audio', source:{type:'base64', media_type: attachedFile.mime, data: attachedFile.base64}};
       } else {
@@ -690,7 +694,7 @@ async function processConversation(){
       content = prompt;
     }
 
-    const extracted = await callGeminiMessage(content, 3000, 2);
+    const extracted = await callGroqMessage(content, 3000, 2);
     extracted.tasks = (extracted.tasks||[]).map(t=>({...t, id:'t'+(taskIdSeq++), done:false, archived:false}));
     extracted.decisions = (extracted.decisions||[]).map(d=>({...d, id:'d'+(taskIdSeq++), archived:false}));
     extracted.key_dates = (extracted.key_dates||[]).map(k=>({...k, id:'k'+(taskIdSeq++)}));
@@ -1018,7 +1022,7 @@ QUERY: "${query}"
 
 CONVERSATIONS:
 ${JSON.stringify(corpus)}`;
-    const results = await callGeminiMessage(prompt, 800, 1);
+    const results = await callGroqMessage(prompt, 800, 1);
     aiSearch = {query, results: Array.isArray(results) ? results : []};
   }catch(err){
     console.error(err);
@@ -1419,7 +1423,7 @@ async function generateDigest(){
 
 CONVERSATIONS:
 ${JSON.stringify(corpus)}`;
-    const result = await callGeminiMessage(prompt, 1200, 1);
+    const result = await callGroqMessage(prompt, 1200, 1);
     const wk = weekKey(new Date());
     const ok = await storageSet(`siteline:digest:${currentProject.id}:${wk}`, JSON.stringify(result), currentProject.shared);
     if(!ok) flagStorageIssue();
