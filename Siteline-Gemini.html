@@ -29,6 +29,14 @@
   }
   .wrap{max-width:1220px;margin:0 auto;}
 
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .tabbtn:focus-visible, .people-row:focus-visible{
+    outline:2px solid var(--cyan); outline-offset:2px;
+  }
+
   .titleblock{
     border:1px solid var(--cyan-dim); background:var(--bg-panel);
     padding:16px 22px; display:flex; align-items:center; justify-content:space-between;
@@ -39,20 +47,23 @@
   .titleblock:after{right:-1px;border-right:1px solid var(--cyan);}
   .titleblock h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24px;margin:0;letter-spacing:0.3px;}
   .titleblock .sub{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-dark-bg-soft);}
-  .titleblock .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dark-bg-soft);display:flex;gap:16px;flex-wrap:wrap;}
-  .titleblock .metaright{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  .titleblock .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dark-bg-soft);display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .titleblock .metaright{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .toprow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;width:100%;}
 
   .projectbar{
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;
     font-family:'IBM Plex Mono',monospace;font-size:12px;
   }
-  .projectbar select{
+  .projectbar select, .projectbar input[type=text]{
     background:var(--paper);color:var(--ink);border:1px solid var(--paper-line);
     padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:12px;
   }
-  .badge{font-size:10.5px;padding:2px 7px;border:1px solid var(--cyan-dim);color:var(--text-dark-bg-soft);}
+  .projectbar input[type=text]{width:110px;}
+  .badge{font-size:10.5px;padding:2px 7px;border:1px solid var(--cyan-dim);color:var(--text-dark-bg-soft);transition:background .15s ease,color .15s ease;}
   .badge.shared{color:#dfae7a;border-color:#8a6a3f;}
   .badge.private{color:var(--text-dark-bg-soft);}
+  .badge.warn{color:#f4d3c0;border-color:var(--rust-strong);background:rgba(176,67,42,0.25);}
 
   .grid{display:grid;grid-template-columns:1fr 1.35fr;gap:16px;margin-bottom:16px;}
   @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
@@ -65,7 +76,9 @@
   select, textarea, input[type=text], input[type=date]{
     width:100%;background:var(--paper);color:var(--ink);border:1px solid var(--paper-line);
     padding:9px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;
+    transition:border-color .15s ease, box-shadow .15s ease;
   }
+  select:hover, textarea:hover, input[type=text]:hover, input[type=date]:hover{ border-color:var(--cyan-dim); }
   textarea{min-height:190px;line-height:1.5;resize:vertical;}
   select{font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
   input[type=file]{
@@ -75,16 +88,21 @@
   .filerow{display:flex;gap:8px;align-items:center;margin-top:6px;}
   .filerow .clearfile{font-size:11px;padding:5px 8px;}
 
-  .btnrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
-  button{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:10px 16px;border:1px solid var(--cyan);background:transparent;color:var(--text-dark-bg);cursor:pointer;letter-spacing:0.2px;}
+  .btnrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+  button{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:10px 16px;border:1px solid var(--cyan);background:transparent;color:var(--text-dark-bg);cursor:pointer;letter-spacing:0.2px;transition:background .15s ease,border-color .15s ease,transform .08s ease;}
+  button:active{ transform:scale(0.97); }
   button.primary{background:var(--cyan);color:var(--bg-deep);}
   button.primary:hover{background:var(--text-dark-bg);border-color:var(--text-dark-bg);}
   button.ghost:hover{background:rgba(127,178,194,0.12);}
   button.danger{border-color:var(--rust-strong);color:#e8b39a;}
   button.danger:hover{background:rgba(176,67,42,0.18);}
-  button:disabled{opacity:0.4;cursor:default;}
+  button:disabled{opacity:0.4;cursor:default;transform:none;}
   button.small{padding:5px 9px;font-size:11px;}
   button.iconx{padding:3px 8px;font-size:12px;line-height:1;border-color:var(--paper-line);color:var(--rust-strong);background:transparent;}
+  button.filterbtn.active{background:var(--cyan);color:var(--bg-deep);border-color:var(--cyan);}
+
+  .spinner{display:inline-block;width:10px;height:10px;border:2px solid rgba(127,178,194,0.3);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:6px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
   .status{font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:10px;min-height:14px;}
   .status.err{color:var(--rust-strong);}
@@ -96,12 +114,14 @@
   .summary-text{background:var(--paper);color:var(--ink);padding:12px 13px;font-size:13.5px;line-height:1.55;border-left:3px solid var(--cyan);}
   textarea.summary-edit{border-left:3px solid var(--cyan);min-height:70px;}
 
-  .row-card{background:var(--paper);color:var(--ink);padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--rust);font-size:13px;}
+  .row-card{background:var(--paper);color:var(--ink);padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--rust);font-size:13px;transition:box-shadow .15s ease;}
+  .row-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.18);}
   .row-card.decision{border-left-color:var(--moss);}
   .row-card.decision.pending{border-left-color:var(--rust);}
   .row-card.date{border-left-color:var(--cyan-dim);}
   .row-card.overdue{border-left-color:var(--rust-strong);box-shadow:inset 0 0 0 1px rgba(176,67,42,0.35);}
   .row-card.duesoon{border-left-color:#c99b3d;}
+  .row-card.archived{opacity:0.55;filter:grayscale(0.35);}
   .readrow{display:flex;justify-content:space-between;gap:10px;align-items:center;}
   .readrow .txt{flex:1;}
   .readrow .txt.done{text-decoration:line-through;color:var(--ink-soft);}
@@ -112,7 +132,13 @@
   .tag.overdue{background:var(--rust-strong);color:#fff;border-color:var(--rust-strong);}
   .tag.duesoon{background:#c99b3d;color:#2a2000;border-color:#c99b3d;}
   .tag.dup{background:transparent;color:#8a5a2a;border-color:#c99b6a;border-style:dashed;}
-  .dupnote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a5a2a;margin-top:4px;}
+  .tag.done-by{background:transparent;color:#3a6a4a;border-color:#7fae8c;}
+  .dupnote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a5a2a;margin-top:6px;}
+  .dupnote .dupactions{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
+  .dupnote .dupactions button{font-family:'IBM Plex Mono',monospace;}
+  .reassign-input{width:112px !important;font-size:11px !important;padding:4px 6px !important;}
+  .iconbtn{border:none;background:transparent;color:var(--ink-soft);padding:2px 6px;font-size:12px;cursor:pointer;}
+  .iconbtn:hover{color:var(--ink);}
 
   .draftrow{display:grid;grid-template-columns:1fr 110px 110px 90px 90px 28px;gap:6px;margin-bottom:6px;align-items:center;}
   .draftrow input, .draftrow select{padding:6px 7px;font-size:12px;}
@@ -121,16 +147,24 @@
   @media (max-width:700px){ .draftrow, .draftrow.decisionrow, .draftrow.daterow{grid-template-columns:1fr;} }
 
   .tabbar{display:flex;gap:2px;flex-wrap:wrap;}
-  .tabbtn{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 14px;background:var(--bg-panel);border:1px solid var(--cyan-dim);border-bottom:none;color:var(--text-dark-bg-soft);cursor:pointer;}
+  .tabbtn{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 14px;background:var(--bg-panel);border:1px solid var(--cyan-dim);border-bottom:none;color:var(--text-dark-bg-soft);cursor:pointer;transition:background .15s ease,color .15s ease;}
   .tabbtn.active{background:var(--bg-panel-2);color:var(--text-dark-bg);}
-  .tabpanel{border:1px solid var(--cyan-dim);background:var(--bg-panel-2);padding:18px;}
-  .searchrow{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .tabbtn:hover{color:var(--text-dark-bg);}
+  .tabpanel{border:1px solid var(--cyan-dim);background:var(--bg-panel-2);padding:18px;animation:fadein .15s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+  .searchrow{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
   .searchrow input{flex:1;min-width:180px;}
 
-  .reg-item{background:var(--bg-panel);border:1px solid var(--cyan-dim);padding:12px 14px;margin-bottom:8px;}
-  .reg-item .top{display:flex;justify-content:space-between;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dark-bg-soft);margin-bottom:6px;}
+  .skeleton-row{height:14px;border-radius:2px;margin-bottom:10px;background:linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.14) 37%, rgba(255,255,255,0.05) 63%);background-size:400% 100%;animation:skeleton 1.3s ease infinite;}
+  @keyframes skeleton{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  .reg-item{background:var(--bg-panel);border:1px solid var(--cyan-dim);padding:12px 14px;margin-bottom:8px;transition:border-color .15s ease, transform .1s ease;}
+  .reg-item:hover{border-color:var(--cyan);}
+  .reg-item .top{display:flex;justify-content:space-between;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dark-bg-soft);margin-bottom:6px;flex-wrap:wrap;}
+  .reg-item .top .left{display:flex;gap:7px;align-items:center;}
   .reg-item .summ{font-size:13px;color:var(--text-dark-bg);line-height:1.4;cursor:pointer;}
   .reg-item .summ:hover{color:var(--cyan);}
+  .attach-flag{cursor:default;}
   .ai-reason{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#dfae7a;margin-top:5px;}
   .empty-note{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dark-bg-soft);padding:20px 0;text-align:center;}
 
@@ -138,7 +172,7 @@
   .group-title{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:var(--cyan);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--cyan-dim);display:flex;justify-content:space-between;align-items:center;}
   .detail-back{margin-bottom:14px;display:flex;gap:8px;}
 
-  .people-row{background:var(--bg-panel);border:1px solid var(--cyan-dim);padding:10px 14px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;}
+  .people-row{background:var(--bg-panel);border:1px solid var(--cyan-dim);padding:10px 14px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;transition:border-color .15s ease;}
   .people-row:hover{border-color:var(--cyan);}
   .people-row.active{border-color:var(--cyan);background:var(--bg-panel-2);}
 
@@ -159,16 +193,26 @@
       <div class="sub">an intelligent layer for project communication — AS-02</div>
     </div>
     <div class="metaright">
-      <div class="projectbar">
-        <span>PROJECT</span>
-        <select id="projectSelect"></select>
-        <span id="projectBadge" class="badge">—</span>
-        <button class="ghost small" id="newProjectBtn">+ New project</button>
+      <div class="toprow">
+        <div class="projectbar">
+          <span>YOU</span>
+          <input type="text" id="userName" placeholder="your name">
+        </div>
+        <div class="projectbar">
+          <span>PROJECT</span>
+          <select id="projectSelect"></select>
+          <span id="projectBadge" class="badge">—</span>
+          <button class="ghost small" id="newProjectBtn">+ New project</button>
+        </div>
+        <button class="ghost small" id="exportAllBtn" title="Download every project as one JSON file">Export all</button>
+        <button class="ghost small" id="importAllBtn" title="Restore from a backup JSON file">Import</button>
+        <input type="file" id="importFileInput" accept="application/json" style="display:none;">
       </div>
       <div class="meta">
         <span id="convCount">0 logged</span>
         <span id="taskCount">0 open</span>
         <span id="pendingCount">0 pending</span>
+        <span id="storageWarn" class="badge warn" style="display:none;" title="A recent save may not have persisted">⚠ not saved</span>
       </div>
     </div>
   </div>
@@ -185,6 +229,8 @@
         <option>Meeting notes</option>
         <option>Call transcript</option>
         <option>Voice note transcript</option>
+        <option>Voice message (audio file)</option>
+        <option>Image / Screenshot</option>
         <option>Other</option>
       </select>
 
@@ -194,8 +240,8 @@
       <label>RAW TEXT <span style="color:var(--text-dark-bg-soft);">(optional if attaching a file)</span></label>
       <textarea id="rawInput" placeholder="Paste the conversation, transcript or notes here..."></textarea>
 
-      <label>ATTACH SCREENSHOT OR PDF <span style="color:var(--text-dark-bg-soft);">(optional)</span></label>
-      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf">
+      <label>ATTACH SCREENSHOT, PDF, OR VOICE MESSAGE <span style="color:var(--text-dark-bg-soft);">(optional)</span></label>
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,audio/flac">
       <div class="filerow" id="fileRow" style="display:none;">
         <span id="fileName" style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;"></span>
         <button class="ghost clearfile" id="clearFileBtn">clear</button>
@@ -215,22 +261,22 @@
     </div>
   </div>
 
-  <div class="tabbar">
-    <div class="tabbtn active" data-tab="register">REGISTER</div>
-    <div class="tabbtn" data-tab="actions">OPEN ACTIONS</div>
-    <div class="tabbtn" data-tab="decisions">DECISIONS</div>
-    <div class="tabbtn" data-tab="people">PEOPLE</div>
-    <div class="tabbtn" data-tab="digest">DIGEST</div>
+  <div class="tabbar" role="tablist" aria-label="Register views">
+    <button type="button" class="tabbtn active" role="tab" aria-selected="true" aria-controls="tabPanel" data-tab="register">Register</button>
+    <button type="button" class="tabbtn" role="tab" aria-selected="false" aria-controls="tabPanel" data-tab="actions">Open Actions</button>
+    <button type="button" class="tabbtn" role="tab" aria-selected="false" aria-controls="tabPanel" data-tab="decisions">Decisions</button>
+    <button type="button" class="tabbtn" role="tab" aria-selected="false" aria-controls="tabPanel" data-tab="people">People</button>
+    <button type="button" class="tabbtn" role="tab" aria-selected="false" aria-controls="tabPanel" data-tab="digest">Digest</button>
   </div>
-  <div class="tabpanel" id="tabPanel"></div>
+  <div class="tabpanel" id="tabPanel" role="tabpanel" tabindex="0" aria-live="polite"></div>
 
+  <datalist id="nameList"></datalist>
 </div>
 
 <script>
 /* ---------------------------------------------------------------- */
 /* STATE                                                              */
 /* ---------------------------------------------------------------- */
-let memoryFallback = {};
 let projects = [];
 let currentProject = null;
 let allConversations = [];
@@ -241,28 +287,86 @@ let aiSearch = null;       // {query, results:[{id,reason}]}
 let selectedPerson = null;
 let taskIdSeq = 0;
 let openDetailId = null;
+let userName = '';
+let actionsFilter = 'all'; // all | overdue | high
+let editingRow = null;     // {conv, section, id} — currently edited row in detail view
 
 const STOPWORDS = new Set(['the','a','an','to','of','for','and','or','in','on','by','with','is','are','be','it','this','that','was','were','has','have','will','we','our','i','you']);
 
 /* ---------------------------------------------------------------- */
-/* STORAGE HELPERS                                                    */
+/* STORAGE — talks to this app's own backend (server.js) instead of   */
+/* the Claude-artifact window.storage API, since this now runs as a   */
+/* standalone app. A small "client id" (just a random opaque string,  */
+/* not app data) is kept in localStorage so the server can tell one   */
+/* browser's "personal" data apart from another's; "shared" data has  */
+/* no client id and is visible to everyone hitting this server.       */
 /* ---------------------------------------------------------------- */
-function hasStorage(){ return typeof window.storage !== 'undefined' && window.storage; }
+let memoryFallback = {}; // used only if the backend is unreachable
+
+function getClientId(){
+  let id = localStorage.getItem('siteline_client_id');
+  if(!id){
+    id = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('siteline_client_id', id);
+  }
+  return id;
+}
+
 async function storageSet(key,value,shared){
-  if(hasStorage()){ try{ await window.storage.set(key,value,!!shared); return; }catch(e){} }
-  memoryFallback[key]=value;
+  try{
+    const res = await fetch('/api/storage/set', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', 'x-client-id':getClientId()},
+      body: JSON.stringify({key, value, shared: !!shared})
+    });
+    if(!res.ok) throw new Error('save failed');
+    return true;
+  }catch(e){
+    console.error('storage.set failed', e);
+    memoryFallback[key] = value;
+    return false;
+  }
 }
 async function storageGet(key,shared){
-  if(hasStorage()){ try{ const r=await window.storage.get(key,!!shared); if(r) return r.value; }catch(e){} }
-  return memoryFallback[key];
+  try{
+    const res = await fetch(`/api/storage/get?key=${encodeURIComponent(key)}&shared=${!!shared}`, {
+      headers:{'x-client-id':getClientId()}
+    });
+    if(res.status === 404) return undefined;
+    if(!res.ok) throw new Error('get failed');
+    const data = await res.json();
+    return data.value;
+  }catch(e){
+    return memoryFallback[key];
+  }
 }
 async function storageList(prefix,shared){
-  if(hasStorage()){ try{ const r=await window.storage.list(prefix,!!shared); if(r&&r.keys) return r.keys; }catch(e){} }
-  return Object.keys(memoryFallback).filter(k=>k.startsWith(prefix));
+  try{
+    const res = await fetch(`/api/storage/list?prefix=${encodeURIComponent(prefix)}&shared=${!!shared}`, {
+      headers:{'x-client-id':getClientId()}
+    });
+    if(!res.ok) throw new Error('list failed');
+    const data = await res.json();
+    return data.keys || [];
+  }catch(e){
+    return Object.keys(memoryFallback).filter(k=>k.startsWith(prefix));
+  }
 }
 async function storageDelete(key,shared){
-  if(hasStorage()){ try{ await window.storage.delete(key,!!shared); return; }catch(e){} }
-  delete memoryFallback[key];
+  try{
+    const res = await fetch('/api/storage/delete', {
+      method:'DELETE',
+      headers:{'Content-Type':'application/json', 'x-client-id':getClientId()},
+      body: JSON.stringify({key, shared: !!shared})
+    });
+    if(!res.ok) throw new Error('delete failed');
+  }catch(e){
+    delete memoryFallback[key];
+  }
+}
+function flagStorageIssue(){
+  const warn = document.getElementById('storageWarn');
+  if(warn) warn.style.display = 'inline-block';
 }
 
 /* ---------------------------------------------------------------- */
@@ -280,7 +384,7 @@ async function loadProjects(){
   const lastId = await storageGet('siteline:lastProject', false);
   currentProject = projects.find(p=>p.id===lastId) || projects[0];
 }
-async function saveProjects(){ await storageSet(PROJECTS_KEY, JSON.stringify(projects), true); }
+async function saveProjects(){ const ok = await storageSet(PROJECTS_KEY, JSON.stringify(projects), true); if(!ok) flagStorageIssue(); }
 
 function renderProjectSelect(){
   const sel = document.getElementById('projectSelect');
@@ -296,6 +400,8 @@ async function switchProject(id){
   draft = null;
   aiSearch = null;
   selectedPerson = null;
+  editingRow = null;
+  openDetailId = null;
   renderProjectSelect();
   renderSheet();
   await loadConversationsForProject();
@@ -316,7 +422,13 @@ async function createProject(){
 /* ---------------------------------------------------------------- */
 function convPrefix(){ return `siteline:conv:${currentProject.id}:`; }
 
+function renderSkeleton(){
+  const panel = document.getElementById('tabPanel');
+  panel.innerHTML = `<div class="skeleton-row" style="width:55%"></div><div class="skeleton-row" style="width:85%"></div><div class="skeleton-row" style="width:70%"></div><div class="skeleton-row" style="width:40%"></div>`;
+}
+
 async function loadConversationsForProject(){
+  renderSkeleton();
   const keys = await storageList(convPrefix(), currentProject.shared);
   const records = [];
   for(const k of keys){
@@ -326,12 +438,13 @@ async function loadConversationsForProject(){
   records.sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
   allConversations = records;
   updateCounts();
+  refreshNameList();
   renderActiveTab();
 }
 
 async function persistRecord(record){
   const key = convPrefix() + record.id;
-  await storageSet(key, JSON.stringify(record), currentProject.shared);
+  return await storageSet(key, JSON.stringify(record), currentProject.shared);
 }
 
 async function deleteConversation(id){
@@ -341,6 +454,7 @@ async function deleteConversation(id){
   allConversations = allConversations.filter(c=>c.id!==id);
   if(openDetailId === id) openDetailId = null;
   updateCounts();
+  refreshNameList();
   renderActiveTab();
 }
 
@@ -394,42 +508,78 @@ function downloadBlob(filename, content, mime){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
+function urgencyRank(t){
+  const cls = dateClass(t.resolved_date);
+  const dateRank = cls==='overdue' ? 0 : cls==='duesoon' ? 1 : 2;
+  const prRank = t.priority==='high' ? 0 : t.priority==='medium' ? 1 : 2;
+  return [dateRank, prRank, t.resolved_date || '9999-99-99'];
+}
+function refreshNameList(){
+  const names = new Set();
+  allConversations.forEach(c=>{
+    (c.extracted.tasks||[]).forEach(t=>{ if(t.assignee) names.add(t.assignee); });
+    (c.extracted.decisions||[]).forEach(d=>{ if(d.owner) names.add(d.owner); });
+    (c.extracted.stakeholders||[]).forEach(s=>{ if(s) names.add(s); });
+  });
+  const dl = document.getElementById('nameList');
+  if(dl) dl.innerHTML = Array.from(names).sort().map(n=>`<option value="${escapeHtml(n)}">`).join('');
+}
 
 /* ---------------------------------------------------------------- */
-/* CLAUDE API                                                         */
+/* GEMINI API (via this app's own backend)                            */
 /* ---------------------------------------------------------------- */
-async function callClaudeMessage(content, maxTokens, retries){
+async function callGeminiMessage(content, maxTokens, retries){
   maxTokens = maxTokens || 1000;
   retries = retries === undefined ? 2 : retries;
   let lastErr;
+
   for(let attempt=0; attempt<=retries; attempt++){
     try{
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: maxTokens,
-          messages: [{ role:"user", content }]
-        })
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ content, maxTokens })
       });
-      const data = await response.json();
-      if(!response.ok){
-        throw new Error((data && data.error && data.error.message) || ('API error ' + response.status));
+
+      const rawBody = await response.text();
+      let data;
+      try{
+        data = rawBody ? JSON.parse(rawBody) : null;
+      }catch(parseErr){
+        throw new Error(`Server sent back something that wasn't JSON (status ${response.status}). First 200 chars: ${rawBody.slice(0,200) || '(empty body)'}`);
       }
+
+      if(!response.ok){
+        const message = data?.error?.message || data?.error || `API error ${response.status}`;
+        throw new Error(message);
+      }
+      if(!data){
+        throw new Error(`Server returned an empty response (status ${response.status}). Check the terminal running "npm start" for the actual error.`);
+      }
+
       const textBlock = (data.content||[]).map(b=>b.text||'').join('\n');
       const cleaned = textBlock.replace(/```json|```/g,'').trim();
-      return JSON.parse(cleaned);
+
+      try{
+        return JSON.parse(cleaned);
+      }catch(parseErr){
+        throw new Error('Response could not be parsed as JSON. Try shortening the input or splitting it into two conversations.');
+      }
     }catch(err){
       lastErr = err;
-      if(attempt < retries) await new Promise(r=>setTimeout(r, 500 * Math.pow(3,attempt)));
+      if(attempt < retries){
+        await new Promise(r=>setTimeout(r, 500 * Math.pow(3,attempt)));
+      }
     }
   }
+
   throw lastErr;
 }
 
 function buildExtractionPrompt(sourceType, sourceDate, rawText, hasFile){
-  return `You are an assistant embedded in a construction/architecture project management tool. You will be given a raw, unstructured project communication (source type: ${sourceType}). ${hasFile ? 'It is attached as an image or PDF — read it carefully first.' : ''} The conversation took place on ${sourceDate}.
+  return `You are an assistant embedded in a construction/architecture project management tool. You will be given a raw, unstructured project communication (source type: ${sourceType}). ${hasFile ? 'It is attached as an image, PDF, or audio recording — read or listen to it carefully first.' : ''} The conversation took place on ${sourceDate}.
 
 Return ONLY a single valid JSON object, no markdown fences, no preamble. Use exactly this shape:
 
@@ -498,16 +648,17 @@ async function handleFileChosen(file){
     r.readAsDataURL(file);
   });
   attachedFile = {name:file.name, mime:file.type, base64};
-  document.getElementById('fileName').textContent = '📎 ' + file.name;
+  const icon = file.type.startsWith('audio/') ? '🎤' : '📎';
+  document.getElementById('fileName').textContent = icon + ' ' + file.name;
   document.getElementById('fileRow').style.display = 'flex';
 }
 
 /* ---------------------------------------------------------------- */
 /* PROCESSING / DRAFT                                                  */
 /* ---------------------------------------------------------------- */
-function setStatus(msg, kind){
+function setStatus(msg, kind, spinning){
   const s = document.getElementById('statusLine');
-  s.textContent = msg || '';
+  s.innerHTML = (spinning ? '<span class="spinner"></span>' : '') + escapeHtml(msg||'');
   s.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '');
 }
 
@@ -520,23 +671,28 @@ async function processConversation(){
 
   const btn = document.getElementById('processBtn');
   btn.disabled = true;
-  setStatus('Reading conversation and extracting structure...', '');
+  setStatus('Reading conversation and extracting structure...', '', true);
 
   try{
     const prompt = buildExtractionPrompt(sourceType, sourceDate, rawText, !!attachedFile);
     let content;
     if(attachedFile){
-      const block = attachedFile.mime === 'application/pdf'
-        ? {type:'document', source:{type:'base64', media_type:'application/pdf', data: attachedFile.base64}}
-        : {type:'image', source:{type:'base64', media_type: attachedFile.mime, data: attachedFile.base64}};
+      let block;
+      if(attachedFile.mime === 'application/pdf'){
+        block = {type:'document', source:{type:'base64', media_type:'application/pdf', data: attachedFile.base64}};
+      } else if(attachedFile.mime.startsWith('audio/')){
+        block = {type:'audio', source:{type:'base64', media_type: attachedFile.mime, data: attachedFile.base64}};
+      } else {
+        block = {type:'image', source:{type:'base64', media_type: attachedFile.mime, data: attachedFile.base64}};
+      }
       content = [block, {type:'text', text: prompt}];
     } else {
       content = prompt;
     }
 
-    const extracted = await callClaudeMessage(content, 1200, 2);
-    extracted.tasks = (extracted.tasks||[]).map(t=>({...t, id:'t'+(taskIdSeq++), done:false}));
-    extracted.decisions = (extracted.decisions||[]).map(d=>({...d, id:'d'+(taskIdSeq++)}));
+    const extracted = await callGeminiMessage(content, 3000, 2);
+    extracted.tasks = (extracted.tasks||[]).map(t=>({...t, id:'t'+(taskIdSeq++), done:false, archived:false}));
+    extracted.decisions = (extracted.decisions||[]).map(d=>({...d, id:'d'+(taskIdSeq++), archived:false}));
     extracted.key_dates = (extracted.key_dates||[]).map(k=>({...k, id:'k'+(taskIdSeq++)}));
 
     draft = {
@@ -561,17 +717,20 @@ async function fileDraft(){
   const record = {
     id, source: draft.sourceType, sourceDate: draft.sourceDate,
     rawText: draft.rawText, attachmentName: draft.attachmentName,
+    filedBy: userName || null,
     timestamp: new Date().toISOString(), extracted: draft.extracted
   };
-  await persistRecord(record);
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
   allConversations.unshift(record);
   draft = null;
   document.getElementById('rawInput').value = '';
   clearFile();
   renderSheet();
   updateCounts();
+  refreshNameList();
   renderActiveTab();
-  setStatus('Filed to the project register.', 'ok');
+  setStatus(ok ? 'Filed to the project register.' : 'Filed, but the save may not have persisted — see the storage warning above.', ok ? 'ok' : 'err');
 }
 function discardDraft(){ draft = null; renderSheet(); setStatus('Draft discarded.', ''); }
 
@@ -592,7 +751,7 @@ function renderSheet(){
   (ex.tasks||[]).forEach((t,i)=>{
     html += `<div class="draftrow" data-section="tasks" data-idx="${i}">
       <input type="text" data-field="task" value="${escapeHtml(t.task)}" placeholder="action">
-      <input type="text" data-field="assignee" value="${escapeHtml(t.assignee||'')}" placeholder="assignee">
+      <input type="text" data-field="assignee" value="${escapeHtml(t.assignee||'')}" placeholder="assignee" list="nameList">
       <input type="text" data-field="deadline" value="${escapeHtml(t.deadline||'')}" placeholder="deadline">
       <input type="date" data-field="resolved_date" value="${escapeHtml(t.resolved_date||'')}">
       <select data-field="priority">
@@ -610,7 +769,7 @@ function renderSheet(){
   (ex.decisions||[]).forEach((d,i)=>{
     html += `<div class="draftrow decisionrow" data-section="decisions" data-idx="${i}">
       <input type="text" data-field="decision" value="${escapeHtml(d.decision)}" placeholder="decision">
-      <input type="text" data-field="owner" value="${escapeHtml(d.owner||'')}" placeholder="owner">
+      <input type="text" data-field="owner" value="${escapeHtml(d.owner||'')}" placeholder="owner" list="nameList">
       <select data-field="status">
         <option ${d.status==='approved'?'selected':''}>approved</option>
         <option ${d.status==='pending'?'selected':''}>pending</option>
@@ -640,8 +799,8 @@ function renderSheet(){
 }
 
 function blankRow(section){
-  if(section==='tasks') return {id:'t'+(taskIdSeq++), task:'', assignee:'', deadline:'', resolved_date:'', priority:'medium', done:false};
-  if(section==='decisions') return {id:'d'+(taskIdSeq++), decision:'', owner:'', status:'pending'};
+  if(section==='tasks') return {id:'t'+(taskIdSeq++), task:'', assignee:'', deadline:'', resolved_date:'', priority:'medium', done:false, archived:false};
+  if(section==='decisions') return {id:'d'+(taskIdSeq++), decision:'', owner:'', status:'pending', archived:false};
   return {id:'k'+(taskIdSeq++), date:'', resolved_date:'', description:''};
 }
 
@@ -677,11 +836,12 @@ document.getElementById('sheetOutput').addEventListener('click', (e)=>{
 /* DUPLICATE DETECTION (cross-conversation)                           */
 /* ---------------------------------------------------------------- */
 function findTaskDuplicate(task, excludeConvId, excludeIdx){
+  if(task.archived) return null;
   let best=null, bestScore=0;
   allConversations.forEach(c=>{
     (c.extracted.tasks||[]).forEach((t,i)=>{
       if(c.id===excludeConvId && i===excludeIdx) return;
-      if(t.done) return;
+      if(t.done || t.archived) return;
       const s = similarity(task.task, t.task);
       if(s>bestScore){ bestScore=s; best={t,c}; }
     });
@@ -689,10 +849,12 @@ function findTaskDuplicate(task, excludeConvId, excludeIdx){
   return bestScore >= 0.4 ? {match:best, score:bestScore} : null;
 }
 function findDecisionDuplicate(dec, excludeConvId, excludeIdx){
+  if(dec.archived) return null;
   let best=null, bestScore=0;
   allConversations.forEach(c=>{
     (c.extracted.decisions||[]).forEach((d,i)=>{
       if(c.id===excludeConvId && i===excludeIdx) return;
+      if(d.archived) return;
       const s = similarity(dec.decision, d.decision);
       if(s>bestScore){ bestScore=s; best={d,c}; }
     });
@@ -700,14 +862,64 @@ function findDecisionDuplicate(dec, excludeConvId, excludeIdx){
   return bestScore >= 0.4 ? {match:best, score:bestScore} : null;
 }
 
+function dupActionsHtml(section, selfConv, selfId, otherConv, otherId){
+  return `<div class="dupactions">
+    <button class="ghost small" data-action="archive-dup" data-section="${section}" data-conv="${selfConv}" data-id="${selfId}">Archive this one</button>
+    <button class="ghost small" data-action="archive-dup" data-section="${section}" data-conv="${otherConv}" data-id="${otherId}">Archive the other one</button>
+  </div>`;
+}
+
+async function archiveItem(convId, section, id){
+  const record = allConversations.find(c=>c.id===convId);
+  if(!record) return;
+  const item = (record.extracted[section]||[]).find(x=>x.id===id);
+  if(!item) return;
+  item.archived = true;
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
+  updateCounts();
+  if(openDetailId === convId) openConversationDetail(convId); else renderActiveTab();
+}
+async function unarchiveItem(convId, section, id){
+  const record = allConversations.find(c=>c.id===convId);
+  if(!record) return;
+  const item = (record.extracted[section]||[]).find(x=>x.id===id);
+  if(!item) return;
+  item.archived = false;
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
+  updateCounts();
+  if(openDetailId === convId) openConversationDetail(convId); else renderActiveTab();
+}
+
+/* ---------------------------------------------------------------- */
+/* EDIT-IN-PLACE (post-filing edits)                                  */
+/* ---------------------------------------------------------------- */
+function isEditing(convId, section, id){
+  return !!editingRow && editingRow.conv===convId && editingRow.section===section && editingRow.id===id;
+}
+async function saveEditedRow(section, convId, id, rowEl){
+  const record = allConversations.find(c=>c.id===convId);
+  if(!record) return;
+  const item = (record.extracted[section]||[]).find(x=>x.id===id);
+  if(!item) return;
+  rowEl.querySelectorAll('[data-field]').forEach(inp=>{ item[inp.dataset.field] = inp.value; });
+  editingRow = null;
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
+  updateCounts();
+  refreshNameList();
+  openConversationDetail(convId);
+}
+
 /* ---------------------------------------------------------------- */
 /* COUNTS                                                             */
 /* ---------------------------------------------------------------- */
 function updateCounts(){
   document.getElementById('convCount').textContent = `${allConversations.length} logged`;
-  const openTasks = allConversations.reduce((s,c)=>s+(c.extracted.tasks||[]).filter(t=>!t.done).length,0);
+  const openTasks = allConversations.reduce((s,c)=>s+(c.extracted.tasks||[]).filter(t=>!t.done && !t.archived).length,0);
   document.getElementById('taskCount').textContent = `${openTasks} open`;
-  const pending = allConversations.reduce((s,c)=>s+(c.extracted.decisions||[]).filter(d=>d.status==='pending').length,0);
+  const pending = allConversations.reduce((s,c)=>s+(c.extracted.decisions||[]).filter(d=>d.status==='pending' && !d.archived).length,0);
   document.getElementById('pendingCount').textContent = `${pending} pending`;
 }
 
@@ -715,7 +927,11 @@ function updateCounts(){
 /* TABS                                                                */
 /* ---------------------------------------------------------------- */
 function renderActiveTab(){
-  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeTab));
+  document.querySelectorAll('.tabbtn').forEach(b=>{
+    const isActive = b.dataset.tab===activeTab;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
   if(activeTab==='register') renderRegister();
   else if(activeTab==='actions') renderOpenActions();
   else if(activeTab==='decisions') renderDecisionLog();
@@ -737,6 +953,12 @@ function matchesQuery(record, q){
   return hay.includes(q);
 }
 
+function regItemTopHtml(c, dt){
+  const attach = c.attachmentName ? `<span class="attach-flag" title="${escapeHtml(c.attachmentName)}">📎</span>` : '';
+  const filedBy = c.filedBy ? `<span>filed by ${escapeHtml(c.filedBy)}</span>` : '';
+  return `<div class="top"><span class="left">${attach}<span>${escapeHtml(c.source)}</span>${filedBy}</span><span>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>`;
+}
+
 function renderRegister(){
   const panel = document.getElementById('tabPanel');
   const filtered = allConversations.filter(c=>matchesQuery(c, registerQuery));
@@ -756,7 +978,7 @@ function renderRegister(){
         if(!rec) return;
         const dt = new Date(rec.timestamp);
         html += `<div class="reg-item" data-id="${rec.id}">
-          <div class="top"><span>${escapeHtml(rec.source)}</span><span>${dt.toLocaleDateString()}</span></div>
+          ${regItemTopHtml(rec, dt)}
           <div class="summ" data-action="open" data-id="${rec.id}">${escapeHtml(rec.extracted.summary||'')}</div>
           <div class="ai-reason">→ ${escapeHtml(r.reason)}</div>
         </div>`;
@@ -771,7 +993,7 @@ function renderRegister(){
     filtered.forEach(c=>{
       const dt = new Date(c.timestamp);
       html += `<div class="reg-item" data-id="${c.id}">
-        <div class="top"><span>${escapeHtml(c.source)}</span><span>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
+        ${regItemTopHtml(c, dt)}
         <div class="summ" data-action="open" data-id="${c.id}">${escapeHtml(c.extracted.summary||'')}</div>
         <div style="margin-top:6px;"><button class="danger small" data-action="delete" data-id="${c.id}">delete</button></div>
       </div>`;
@@ -787,8 +1009,8 @@ async function performAiSearch(query){
     const corpus = allConversations.map(c=>({
       id: c.id,
       summary: c.extracted.summary,
-      tasks: (c.extracted.tasks||[]).map(t=>t.task+(t.assignee?' ('+t.assignee+')':'')),
-      decisions: (c.extracted.decisions||[]).map(d=>d.decision+' ['+d.status+']')
+      tasks: (c.extracted.tasks||[]).filter(t=>!t.archived).map(t=>t.task+(t.assignee?' ('+t.assignee+')':'')),
+      decisions: (c.extracted.decisions||[]).filter(d=>!d.archived).map(d=>d.decision+' ['+d.status+']')
     }));
     const prompt = `Given this list of project conversations (JSON below) and a search query, return ONLY a JSON array (no markdown) of the most relevant matches, each shaped {"id": "...", "reason": "short reason under 15 words"}. Only include genuinely relevant matches (max 6), ranked best first. If nothing is relevant, return [].
 
@@ -796,7 +1018,7 @@ QUERY: "${query}"
 
 CONVERSATIONS:
 ${JSON.stringify(corpus)}`;
-    const results = await callClaudeMessage(prompt, 800, 1);
+    const results = await callGeminiMessage(prompt, 800, 1);
     aiSearch = {query, results: Array.isArray(results) ? results : []};
   }catch(err){
     console.error(err);
@@ -816,20 +1038,129 @@ function setTabNote(msg){
 function exportRegisterMarkdown(){
   let md = `# ${currentProject.name} — Project Register\n\nExported ${new Date().toLocaleString()}\n\n`;
   allConversations.forEach(c=>{
-    md += `## ${c.source} — ${new Date(c.timestamp).toLocaleDateString()}\n\n${c.extracted.summary}\n\n`;
-    if((c.extracted.tasks||[]).length){
+    md += `## ${c.source} — ${new Date(c.timestamp).toLocaleDateString()}${c.filedBy ? ' (filed by '+c.filedBy+')' : ''}\n\n${c.extracted.summary}\n\n`;
+    const liveTasks = (c.extracted.tasks||[]).filter(t=>!t.archived);
+    if(liveTasks.length){
       md += `**Actions:**\n`;
-      c.extracted.tasks.forEach(t=>{ md += `- [${t.done?'x':' '}] ${t.task} — ${t.assignee||'unassigned'} — ${t.deadline||'no deadline'}\n`; });
+      liveTasks.forEach(t=>{ md += `- [${t.done?'x':' '}] ${t.task} — ${t.assignee||'unassigned'} — ${t.deadline||'no deadline'}${t.done && t.doneBy ? ' — done by '+t.doneBy : ''}\n`; });
       md += `\n`;
     }
-    if((c.extracted.decisions||[]).length){
+    const liveDecisions = (c.extracted.decisions||[]).filter(d=>!d.archived);
+    if(liveDecisions.length){
       md += `**Decisions:**\n`;
-      c.extracted.decisions.forEach(d=>{ md += `- ${d.decision} — ${d.status}${d.owner?' — '+d.owner:''}\n`; });
+      liveDecisions.forEach(d=>{ md += `- ${d.decision} — ${d.status}${d.owner?' — '+d.owner:''}${d.resolvedBy ? ' — resolved by '+d.resolvedBy : ''}\n`; });
       md += `\n`;
     }
     md += `---\n\n`;
   });
   downloadBlob(`${currentProject.name.replace(/\s+/g,'_')}_register.md`, md, 'text/markdown');
+}
+
+function taskRowHtml(t, record){
+  if(t.archived){
+    return `<div class="row-card archived"><div class="readrow">
+      <span class="txt" style="text-decoration:line-through;">${escapeHtml(t.task)}</span>
+      <div class="tags"><span class="tag dup">archived duplicate</span>
+        <button class="ghost small" data-action="unarchive" data-section="tasks" data-conv="${record.id}" data-id="${t.id}">Restore</button>
+      </div></div></div>`;
+  }
+  if(isEditing(record.id,'tasks',t.id)){
+    return `<div class="draftrow" data-edit-section="tasks" data-edit-conv="${record.id}" data-edit-id="${t.id}">
+      <input type="text" data-field="task" value="${escapeHtml(t.task)}" placeholder="action">
+      <input type="text" data-field="assignee" value="${escapeHtml(t.assignee||'')}" placeholder="assignee" list="nameList">
+      <input type="text" data-field="deadline" value="${escapeHtml(t.deadline||'')}" placeholder="deadline">
+      <input type="date" data-field="resolved_date" value="${escapeHtml(t.resolved_date||'')}">
+      <select data-field="priority">
+        <option ${t.priority==='high'?'selected':''}>high</option>
+        <option ${t.priority==='medium'?'selected':''}>medium</option>
+        <option ${t.priority==='low'?'selected':''}>low</option>
+      </select>
+      <span></span>
+    </div>
+    <div class="btnrow" style="margin-top:2px;margin-bottom:10px;">
+      <button class="primary small" data-action="save-edit" data-section="tasks" data-conv="${record.id}" data-id="${t.id}">Save</button>
+      <button class="ghost small" data-action="cancel-edit">Cancel</button>
+    </div>`;
+  }
+  const dup = findTaskDuplicate(t, record.id, (record.extracted.tasks||[]).indexOf(t));
+  const cls = dateClass(t.resolved_date);
+  const doneByTag = (t.done && t.doneBy) ? `<span class="tag done-by">✓ ${escapeHtml(t.doneBy)}</span>` : '';
+  return `<div class="row-card ${cls}"><div class="readrow">
+    <label style="display:flex;gap:8px;align-items:center;flex:1;margin:0;text-transform:none;font-family:inherit;font-size:13px;color:var(--ink);">
+      <input type="checkbox" data-action="toggle-done" data-conv="${record.id}" data-task="${t.id}" ${t.done?'checked':''}>
+      <span class="txt ${t.done?'done':''}">${escapeHtml(t.task)}</span>
+    </label>
+    <div class="tags">
+      ${t.assignee?`<span class="tag who">${escapeHtml(t.assignee)}</span>`:''}
+      ${dateTagHtml(t.resolved_date, t.deadline)}
+      <span class="tag">${escapeHtml(t.priority||'—')}</span>
+      ${doneByTag}
+      <button class="iconbtn" data-action="edit-row" data-section="tasks" data-conv="${record.id}" data-id="${t.id}" title="Edit">✎</button>
+    </div></div>
+    ${dup?`<div class="dupnote">⚠ similar to an existing open action: "${escapeHtml(dup.match.t.task)}" (${escapeHtml(dup.match.c.source)})${dupActionsHtml('tasks', record.id, t.id, dup.match.c.id, dup.match.t.id)}</div>`:''}
+  </div>`;
+}
+
+function decisionRowHtml(d, record){
+  if(d.archived){
+    return `<div class="row-card decision archived"><div class="readrow">
+      <span class="txt" style="text-decoration:line-through;">${escapeHtml(d.decision)}</span>
+      <div class="tags"><span class="tag dup">archived duplicate</span>
+        <button class="ghost small" data-action="unarchive" data-section="decisions" data-conv="${record.id}" data-id="${d.id}">Restore</button>
+      </div></div></div>`;
+  }
+  if(isEditing(record.id,'decisions',d.id)){
+    return `<div class="draftrow decisionrow" data-edit-section="decisions" data-edit-conv="${record.id}" data-edit-id="${d.id}">
+      <input type="text" data-field="decision" value="${escapeHtml(d.decision)}" placeholder="decision">
+      <input type="text" data-field="owner" value="${escapeHtml(d.owner||'')}" placeholder="owner" list="nameList">
+      <select data-field="status">
+        <option ${d.status==='approved'?'selected':''}>approved</option>
+        <option ${d.status==='pending'?'selected':''}>pending</option>
+        <option ${d.status==='rejected'?'selected':''}>rejected</option>
+      </select>
+      <span></span>
+    </div>
+    <div class="btnrow" style="margin-top:2px;margin-bottom:10px;">
+      <button class="primary small" data-action="save-edit" data-section="decisions" data-conv="${record.id}" data-id="${d.id}">Save</button>
+      <button class="ghost small" data-action="cancel-edit">Cancel</button>
+    </div>`;
+  }
+  const dup = findDecisionDuplicate(d, record.id, (record.extracted.decisions||[]).indexOf(d));
+  const resolvedByTag = d.resolvedBy ? `<span class="tag done-by">${escapeHtml(d.resolvedBy)}</span>` : '';
+  return `<div class="row-card decision ${d.status==='pending'?'pending':''}"><div class="readrow">
+    <div class="txt">${escapeHtml(d.decision)}</div>
+    <div class="tags">
+      ${d.owner?`<span class="tag who">${escapeHtml(d.owner)}</span>`:''}
+      ${resolvedByTag}
+      <select data-action="set-status" data-conv="${record.id}" data-decision="${d.id}" style="font-size:11px;padding:2px 5px;">
+        <option ${d.status==='approved'?'selected':''}>approved</option>
+        <option ${d.status==='pending'?'selected':''}>pending</option>
+        <option ${d.status==='rejected'?'selected':''}>rejected</option>
+      </select>
+      <button class="iconbtn" data-action="edit-row" data-section="decisions" data-conv="${record.id}" data-id="${d.id}" title="Edit">✎</button>
+    </div></div>
+    ${dup?`<div class="dupnote">⚠ similar to: "${escapeHtml(dup.match.d.decision)}" (${escapeHtml(dup.match.c.source)})${dupActionsHtml('decisions', record.id, d.id, dup.match.c.id, dup.match.d.id)}</div>`:''}
+  </div>`;
+}
+
+function dateRowHtml(k, record){
+  if(isEditing(record.id,'key_dates',k.id)){
+    return `<div class="draftrow daterow" data-edit-section="key_dates" data-edit-conv="${record.id}" data-edit-id="${k.id}">
+      <input type="text" data-field="date" value="${escapeHtml(k.date)}" placeholder="date as mentioned">
+      <input type="date" data-field="resolved_date" value="${escapeHtml(k.resolved_date||'')}">
+      <input type="text" data-field="description" value="${escapeHtml(k.description)}" placeholder="description">
+      <span></span>
+    </div>
+    <div class="btnrow" style="margin-top:2px;margin-bottom:10px;">
+      <button class="primary small" data-action="save-edit" data-section="key_dates" data-conv="${record.id}" data-id="${k.id}">Save</button>
+      <button class="ghost small" data-action="cancel-edit">Cancel</button>
+    </div>`;
+  }
+  return `<div class="row-card date"><div class="readrow">
+    <span class="d" style="font-family:'IBM Plex Mono',monospace;color:#2a5062;">${escapeHtml(k.date)}</span>
+    <div class="txt">${escapeHtml(k.description)}</div>
+    <button class="iconbtn" data-action="edit-row" data-section="key_dates" data-conv="${record.id}" data-id="${k.id}" title="Edit">✎</button>
+  </div></div>`;
 }
 
 function openConversationDetail(id){
@@ -839,50 +1170,21 @@ function openConversationDetail(id){
   const panel = document.getElementById('tabPanel');
   const dt = new Date(record.timestamp);
   let html = `<div class="detail-back"><button class="ghost small" data-action="back">&larr; back to register</button><button class="danger small" data-action="delete" data-id="${record.id}">delete</button></div>`;
-  html += `<div class="hint" style="margin-bottom:14px;">${escapeHtml(record.source)} · conversation date ${escapeHtml(record.sourceDate||'—')} · filed ${dt.toLocaleString()}${record.attachmentName?' · 📎 '+escapeHtml(record.attachmentName):''}</div>`;
+  html += `<div class="hint" style="margin-bottom:14px;">${escapeHtml(record.source)} · conversation date ${escapeHtml(record.sourceDate||'—')} · filed ${dt.toLocaleString()}${record.filedBy?' by '+escapeHtml(record.filedBy):''}${record.attachmentName?' · 📎 '+escapeHtml(record.attachmentName):''}</div>`;
   html += `<div class="sheet-section"><h3>SUMMARY</h3><div class="summary-text">${escapeHtml(record.extracted.summary||'')}</div></div>`;
 
   html += `<div class="sheet-section"><h3>ACTIONS (${(record.extracted.tasks||[]).length})</h3>`;
-  (record.extracted.tasks||[]).forEach(t=>{
-    const dup = findTaskDuplicate(t, record.id, (record.extracted.tasks||[]).indexOf(t));
-    const cls = dateClass(t.resolved_date);
-    html += `<div class="row-card ${cls}"><div class="readrow">
-      <label style="display:flex;gap:8px;align-items:center;flex:1;margin:0;text-transform:none;font-family:inherit;font-size:13px;color:var(--ink);">
-        <input type="checkbox" data-action="toggle-done" data-conv="${record.id}" data-task="${t.id}" ${t.done?'checked':''}>
-        <span class="txt ${t.done?'done':''}">${escapeHtml(t.task)}</span>
-      </label>
-      <div class="tags">
-        ${t.assignee?`<span class="tag who">${escapeHtml(t.assignee)}</span>`:''}
-        ${dateTagHtml(t.resolved_date, t.deadline)}
-        <span class="tag">${escapeHtml(t.priority||'—')}</span>
-      </div></div>
-      ${dup?`<div class="dupnote">⚠ similar to an existing open action: "${escapeHtml(dup.match.t.task)}" (${escapeHtml(dup.match.c.source)})</div>`:''}
-    </div>`;
-  });
+  (record.extracted.tasks||[]).forEach(t=>{ html += taskRowHtml(t, record); });
   if((record.extracted.tasks||[]).length===0) html += `<div class="empty-note">No actions identified.</div>`;
   html += `</div>`;
 
   html += `<div class="sheet-section"><h3>DECISIONS (${(record.extracted.decisions||[]).length})</h3>`;
-  (record.extracted.decisions||[]).forEach(d=>{
-    html += `<div class="row-card decision ${d.status==='pending'?'pending':''}"><div class="readrow">
-      <div class="txt">${escapeHtml(d.decision)}</div>
-      <div class="tags">
-        ${d.owner?`<span class="tag who">${escapeHtml(d.owner)}</span>`:''}
-        <select data-action="set-status" data-conv="${record.id}" data-decision="${d.id}" style="font-size:11px;padding:2px 5px;">
-          <option ${d.status==='approved'?'selected':''}>approved</option>
-          <option ${d.status==='pending'?'selected':''}>pending</option>
-          <option ${d.status==='rejected'?'selected':''}>rejected</option>
-        </select>
-      </div></div>
-    </div>`;
-  });
+  (record.extracted.decisions||[]).forEach(d=>{ html += decisionRowHtml(d, record); });
   if((record.extracted.decisions||[]).length===0) html += `<div class="empty-note">No decisions identified.</div>`;
   html += `</div>`;
 
   html += `<div class="sheet-section"><h3>KEY DATES (${(record.extracted.key_dates||[]).length})</h3>`;
-  (record.extracted.key_dates||[]).forEach(k=>{
-    html += `<div class="row-card date"><div class="readrow"><span class="d" style="font-family:'IBM Plex Mono',monospace;color:#2a5062;">${escapeHtml(k.date)}</span><div class="txt">${escapeHtml(k.description)}</div></div></div>`;
-  });
+  (record.extracted.key_dates||[]).forEach(k=>{ html += dateRowHtml(k, record); });
   if((record.extracted.key_dates||[]).length===0) html += `<div class="empty-note">No dates identified.</div>`;
   html += `</div>`;
 
@@ -896,7 +1198,10 @@ async function toggleTaskDone(convId, taskId, checked){
   const task = (record.extracted.tasks||[]).find(t=>t.id===taskId);
   if(!task) return;
   task.done = checked;
-  await persistRecord(record);
+  if(checked){ task.doneBy = userName || 'Unknown'; task.doneAt = new Date().toISOString(); }
+  else { task.doneBy = null; task.doneAt = null; }
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
   updateCounts();
 }
 async function setDecisionStatus(convId, decisionId, status){
@@ -905,8 +1210,21 @@ async function setDecisionStatus(convId, decisionId, status){
   const dec = (record.extracted.decisions||[]).find(d=>d.id===decisionId);
   if(!dec) return;
   dec.status = status;
-  await persistRecord(record);
+  dec.resolvedBy = status === 'pending' ? null : (userName || 'Unknown');
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
   updateCounts();
+}
+async function reassignTask(convId, taskId, newAssignee){
+  const record = allConversations.find(c=>c.id===convId);
+  if(!record) return;
+  const task = (record.extracted.tasks||[]).find(t=>t.id===taskId);
+  if(!task) return;
+  task.assignee = newAssignee || null;
+  const ok = await persistRecord(record);
+  if(!ok) flagStorageIssue();
+  refreshNameList();
+  renderActiveTab();
 }
 
 /* ---- Open Actions ---- */
@@ -914,51 +1232,77 @@ function renderOpenActions(){
   const panel = document.getElementById('tabPanel');
   const groups = {};
   const seen = []; // for cross-group duplicate badges
+  const archivedList = [];
   allConversations.forEach(c=>{
     (c.extracted.tasks||[]).forEach(t=>{
       if(t.done) return;
+      if(t.archived){ archivedList.push({t,c}); return; }
+      if(actionsFilter==='overdue' && dateClass(t.resolved_date)!=='overdue') return;
+      if(actionsFilter==='high' && t.priority!=='high') return;
       const who = t.assignee || 'Unassigned';
       if(!groups[who]) groups[who] = [];
       groups[who].push({t, c});
     });
   });
+  Object.keys(groups).forEach(who=>{
+    groups[who].sort((a,b)=>{
+      const ra = urgencyRank(a.t), rb = urgencyRank(b.t);
+      if(ra[0]!==rb[0]) return ra[0]-rb[0];
+      if(ra[1]!==rb[1]) return ra[1]-rb[1];
+      return String(ra[2]).localeCompare(String(rb[2]));
+    });
+  });
   const names = Object.keys(groups).sort((a,b)=> a==='Unassigned'?1 : b==='Unassigned'?-1 : a.localeCompare(b));
 
-  let html = `<div class="searchrow"><button class="ghost small" id="exportCsvBtn">Export open actions (.csv)</button></div>`;
+  let html = `<div class="searchrow">
+    <button class="ghost small filterbtn ${actionsFilter==='all'?'active':''}" data-action="filter" data-filter="all">All</button>
+    <button class="ghost small filterbtn ${actionsFilter==='overdue'?'active':''}" data-action="filter" data-filter="overdue">Overdue</button>
+    <button class="ghost small filterbtn ${actionsFilter==='high'?'active':''}" data-action="filter" data-filter="high">High priority</button>
+    <button class="ghost small" id="exportCsvBtn" style="margin-left:auto;">Export open actions (.csv)</button>
+  </div>`;
   if(names.length===0){
-    html += `<div class="empty-note">No open actions yet. Process a conversation to populate this board.</div>`;
-    panel.innerHTML = html;
-    return;
+    html += `<div class="empty-note">No open actions${actionsFilter!=='all'?' match this filter':' yet. Process a conversation to populate this board.'}</div>`;
+  } else {
+    names.forEach(who=>{
+      html += `<div class="group-block"><div class="group-title"><span>${escapeHtml(who)}</span><span>${groups[who].length} item${groups[who].length===1?'':'s'}</span></div>`;
+      groups[who].forEach(({t,c})=>{
+        seen.push({t,c});
+        const otherMatches = seen.filter(o=>o.t!==t).find(o=>similarity(o.t.task,t.task)>=0.5);
+        const cls = dateClass(t.resolved_date);
+        html += `<div class="row-card ${cls}"><div class="readrow">
+          <label style="display:flex;gap:8px;align-items:center;flex:1;margin:0;text-transform:none;font-family:inherit;font-size:13px;color:var(--ink);">
+            <input type="checkbox" data-action="toggle-done" data-conv="${c.id}" data-task="${t.id}">
+            <span class="txt">${escapeHtml(t.task)} <span style="color:var(--ink-soft);font-size:11.5px;">(${escapeHtml(c.source)})</span></span>
+          </label>
+          <div class="tags">
+            ${dateTagHtml(t.resolved_date, t.deadline)}
+            <span class="tag">${escapeHtml(t.priority||'—')}</span>
+            <input type="text" class="reassign-input" list="nameList" placeholder="reassign…" value="${escapeHtml(t.assignee||'')}" data-action-reassign data-conv="${c.id}" data-task="${t.id}">
+          </div></div>
+          ${otherMatches?`<div class="dupnote">⚠ possible duplicate of another open action: "${escapeHtml(otherMatches.t.task)}"${dupActionsHtml('tasks', c.id, t.id, otherMatches.c.id, otherMatches.t.id)}</div>`:''}
+        </div>`;
+      });
+      html += `</div>`;
+    });
   }
-  names.forEach(who=>{
-    html += `<div class="group-block"><div class="group-title"><span>${escapeHtml(who)}</span><span>${groups[who].length} item${groups[who].length===1?'':'s'}</span></div>`;
-    groups[who].forEach(({t,c})=>{
-      seen.push({t,c});
-      let dupHtml = '';
-      const otherMatches = seen.filter(o=>o.t!==t).find(o=>similarity(o.t.task,t.task)>=0.5);
-      const cls = dateClass(t.resolved_date);
-      html += `<div class="row-card ${cls}"><div class="readrow">
-        <label style="display:flex;gap:8px;align-items:center;flex:1;margin:0;text-transform:none;font-family:inherit;font-size:13px;color:var(--ink);">
-          <input type="checkbox" data-action="toggle-done" data-conv="${c.id}" data-task="${t.id}">
-          <span class="txt">${escapeHtml(t.task)} <span style="color:var(--ink-soft);font-size:11.5px;">(${escapeHtml(c.source)})</span></span>
-        </label>
-        <div class="tags">
-          ${dateTagHtml(t.resolved_date, t.deadline)}
-          <span class="tag">${escapeHtml(t.priority||'—')}</span>
-        </div></div>
-        ${otherMatches?`<div class="dupnote">⚠ possible duplicate of another open action: "${escapeHtml(otherMatches.t.task)}"</div>`:''}
-      </div>`;
+  if(archivedList.length){
+    html += `<div class="group-block"><div class="group-title"><span>Archived duplicates</span><span>${archivedList.length}</span></div>`;
+    archivedList.forEach(({t,c})=>{
+      html += `<div class="row-card archived"><div class="readrow">
+        <span class="txt" style="text-decoration:line-through;">${escapeHtml(t.task)} <span style="color:var(--ink-soft);font-size:11px;">(${escapeHtml(c.source)})</span></span>
+        <button class="ghost small" data-action="unarchive" data-section="tasks" data-conv="${c.id}" data-id="${t.id}">Restore</button>
+      </div></div>`;
     });
     html += `</div>`;
-  });
+  }
   panel.innerHTML = html;
 }
 
 function exportOpenActionsCsv(){
-  const rows = [['Task','Assignee','Deadline','Resolved date','Priority','Source','Conversation date']];
+  const rows = [['Task','Assignee','Deadline','Resolved date','Priority','Source','Conversation date','Filed by']];
   allConversations.forEach(c=>{
-    (c.extracted.tasks||[]).filter(t=>!t.done).forEach(t=>{
-      rows.push([t.task, t.assignee||'', t.deadline||'', t.resolved_date||'', t.priority||'', c.source, c.sourceDate||'']);
+    (c.extracted.tasks||[]).filter(t=>!t.done && !t.archived).forEach(t=>{
+      rows.push([t.task, t.assignee||'', t.deadline||'', t.resolved_date||'', t.priority||'', c.source, c.sourceDate||'', c.filedBy||'']);
     });
   });
   const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -969,28 +1313,41 @@ function exportOpenActionsCsv(){
 function renderDecisionLog(){
   const panel = document.getElementById('tabPanel');
   const all = [];
-  allConversations.forEach(c=>{ (c.extracted.decisions||[]).forEach(d=>all.push({d,c})); });
-  if(all.length===0){ panel.innerHTML = `<div class="empty-note">No decisions logged yet.</div>`; return; }
+  const archivedList = [];
+  allConversations.forEach(c=>{ (c.extracted.decisions||[]).forEach(d=>{ if(d.archived) archivedList.push({d,c}); else all.push({d,c}); }); });
+  if(all.length===0 && archivedList.length===0){ panel.innerHTML = `<div class="empty-note">No decisions logged yet.</div>`; return; }
   const pending = all.filter(x=>x.d.status==='pending');
   const resolved = all.filter(x=>x.d.status!=='pending');
   let html='';
   const rowHtml = ({d,c})=>{
     const dup = findDecisionDuplicate(d, c.id, (c.extracted.decisions||[]).indexOf(d));
+    const resolvedByTag = d.resolvedBy ? `<span class="tag done-by">${escapeHtml(d.resolvedBy)}</span>` : '';
     return `<div class="row-card decision ${d.status==='pending'?'pending':''}">
       <div class="readrow"><div class="txt">${escapeHtml(d.decision)} <span style="color:var(--ink-soft);font-size:11.5px;">(${escapeHtml(c.source)})</span></div>
       <div class="tags">
         ${d.owner?`<span class="tag who">${escapeHtml(d.owner)}</span>`:''}
+        ${resolvedByTag}
         <select data-action="set-status" data-conv="${c.id}" data-decision="${d.id}" style="font-size:11px;padding:2px 5px;">
           <option ${d.status==='approved'?'selected':''}>approved</option>
           <option ${d.status==='pending'?'selected':''}>pending</option>
           <option ${d.status==='rejected'?'selected':''}>rejected</option>
         </select>
       </div></div>
-      ${dup?`<div class="dupnote">⚠ similar to: "${escapeHtml(dup.match.d.decision)}" (${escapeHtml(dup.match.c.source)})</div>`:''}
+      ${dup?`<div class="dupnote">⚠ similar to: "${escapeHtml(dup.match.d.decision)}" (${escapeHtml(dup.match.c.source)})${dupActionsHtml('decisions', c.id, d.id, dup.match.c.id, dup.match.d.id)}</div>`:''}
     </div>`;
   };
   if(pending.length){ html += `<div class="group-block"><div class="group-title">Pending — ${pending.length}</div>`; pending.forEach(x=>html+=rowHtml(x)); html+=`</div>`; }
   if(resolved.length){ html += `<div class="group-block"><div class="group-title">Resolved — ${resolved.length}</div>`; resolved.forEach(x=>html+=rowHtml(x)); html+=`</div>`; }
+  if(archivedList.length){
+    html += `<div class="group-block"><div class="group-title"><span>Archived duplicates</span><span>${archivedList.length}</span></div>`;
+    archivedList.forEach(({d,c})=>{
+      html += `<div class="row-card decision archived"><div class="readrow">
+        <span class="txt" style="text-decoration:line-through;">${escapeHtml(d.decision)} <span style="color:var(--ink-soft);font-size:11px;">(${escapeHtml(c.source)})</span></span>
+        <button class="ghost small" data-action="unarchive" data-section="decisions" data-conv="${c.id}" data-id="${d.id}">Restore</button>
+      </div></div>`;
+    });
+    html += `</div>`;
+  }
   panel.innerHTML = html;
 }
 
@@ -1000,8 +1357,8 @@ function renderPeople(){
   const people = {};
   function touch(name){ if(!name) return; if(!people[name]) people[name]={openTasks:[],pending:[],mentions:0}; people[name].mentions++; }
   allConversations.forEach(c=>{
-    (c.extracted.tasks||[]).forEach(t=>{ if(t.assignee){ touch(t.assignee); if(!t.done) people[t.assignee].openTasks.push({t,c}); } });
-    (c.extracted.decisions||[]).forEach(d=>{ if(d.owner){ touch(d.owner); if(d.status==='pending') people[d.owner].pending.push({d,c}); } });
+    (c.extracted.tasks||[]).forEach(t=>{ if(t.assignee){ touch(t.assignee); if(!t.done && !t.archived) people[t.assignee].openTasks.push({t,c}); } });
+    (c.extracted.decisions||[]).forEach(d=>{ if(d.owner){ touch(d.owner); if(d.status==='pending' && !d.archived) people[d.owner].pending.push({d,c}); } });
     (c.extracted.stakeholders||[]).forEach(s=>touch(s));
   });
   const names = Object.keys(people).sort((a,b)=> (people[b].openTasks.length+people[b].pending.length) - (people[a].openTasks.length+people[a].pending.length));
@@ -1009,7 +1366,7 @@ function renderPeople(){
   let html = '';
   names.forEach(name=>{
     const p = people[name];
-    html += `<div class="people-row ${selectedPerson===name?'active':''}" data-action="select-person" data-name="${escapeHtml(name)}">
+    html += `<div class="people-row ${selectedPerson===name?'active':''}" data-action="select-person" data-name="${escapeHtml(name)}" tabindex="0" role="button">
       <span>${escapeHtml(name)}</span>
       <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dark-bg-soft);">${p.openTasks.length} open · ${p.pending.length} pending</span>
     </div>`;
@@ -1048,28 +1405,68 @@ function renderDigestBox(d){
   return h;
 }
 async function generateDigest(){
-  const panel = document.getElementById('tabPanel');
   setTabNote('Generating this week\'s digest...');
   const weekAgo = Date.now() - 7*86400000;
   const recent = allConversations.filter(c=> new Date(c.timestamp).getTime() >= weekAgo);
   const source = recent.length ? recent : allConversations;
   try{
     const corpus = source.map(c=>({
-      source: c.source, summary: c.extracted.summary,
-      tasks: (c.extracted.tasks||[]).map(t=>`${t.task} (${t.assignee||'unassigned'}, ${t.done?'done':'open'})`),
-      decisions: (c.extracted.decisions||[]).map(d=>`${d.decision} [${d.status}]`)
+      source: c.source, filedBy: c.filedBy||null, summary: c.extracted.summary,
+      tasks: (c.extracted.tasks||[]).filter(t=>!t.archived).map(t=>`${t.task} (${t.assignee||'unassigned'}, ${t.done?'done'+(t.doneBy?' by '+t.doneBy:''):'open'})`),
+      decisions: (c.extracted.decisions||[]).filter(d=>!d.archived).map(d=>`${d.decision} [${d.status}${d.resolvedBy?' by '+d.resolvedBy:''}]`)
     }));
-    const prompt = `You are summarizing a week of project communication for "${currentProject.name}". Given the conversations below (JSON), return ONLY a JSON object: {"digest": "one paragraph plain-language summary of the week", "priorities": ["3-5 short top priorities for the coming days"], "watch_items": ["2-4 short risks or decisions needing attention"]}. Be concrete and reference specifics from the data, not generic advice.
+    const prompt = `You are summarizing a week of project communication for "${currentProject.name}". Given the conversations below (JSON), return ONLY a JSON object: {"digest": "one paragraph plain-language summary of the week", "priorities": ["3-5 short top priorities for the coming days"], "watch_items": ["2-4 short risks or decisions needing attention"]}. Be concrete and reference specifics from the data, not generic advice. Where the data names who filed a conversation or who completed/resolved something, you may mention who's been driving progress — but only if the names are actually present in the data.
 
 CONVERSATIONS:
 ${JSON.stringify(corpus)}`;
-    const result = await callClaudeMessage(prompt, 900, 1);
+    const result = await callGeminiMessage(prompt, 1200, 1);
     const wk = weekKey(new Date());
-    await storageSet(`siteline:digest:${currentProject.id}:${wk}`, JSON.stringify(result), currentProject.shared);
+    const ok = await storageSet(`siteline:digest:${currentProject.id}:${wk}`, JSON.stringify(result), currentProject.shared);
+    if(!ok) flagStorageIssue();
   }catch(err){
     console.error(err);
   }
   renderDigest();
+}
+
+/* ---------------------------------------------------------------- */
+/* BACKUP / RESTORE                                                    */
+/* ---------------------------------------------------------------- */
+async function exportAllBackup(){
+  const data = {exportedAt:new Date().toISOString(), projects:[]};
+  for(const p of projects){
+    const prefix = `siteline:conv:${p.id}:`;
+    const keys = await storageList(prefix, p.shared);
+    const records = [];
+    for(const k of keys){
+      const v = await storageGet(k, p.shared);
+      if(v){ try{ records.push(JSON.parse(v)); }catch(e){} }
+    }
+    data.projects.push({project:p, conversations:records});
+  }
+  downloadBlob('siteline_full_backup.json', JSON.stringify(data,null,2), 'application/json');
+}
+async function importAllBackup(file){
+  const text = await file.text();
+  let data;
+  try{ data = JSON.parse(text); }catch(e){ setStatus('Import failed: not a valid JSON file.', 'err'); return; }
+  if(!data || !Array.isArray(data.projects)){ setStatus('Import failed: unrecognized backup format.', 'err'); return; }
+  if(!window.confirm(`This will merge ${data.projects.length} project(s) from the backup into your current data. Continue?`)) return;
+  let anyFailed = false;
+  for(const entry of data.projects){
+    const p = entry.project;
+    if(!p || !p.id) continue;
+    if(!projects.find(x=>x.id===p.id)) projects.push(p);
+    for(const rec of (entry.conversations||[])){
+      const ok = await storageSet(`siteline:conv:${p.id}:${rec.id}`, JSON.stringify(rec), !!p.shared);
+      if(!ok) anyFailed = true;
+    }
+  }
+  await saveProjects();
+  renderProjectSelect();
+  await loadConversationsForProject();
+  if(anyFailed) flagStorageIssue();
+  setStatus('Backup imported.', anyFailed ? 'err' : 'ok');
 }
 
 /* ---------------------------------------------------------------- */
@@ -1081,9 +1478,26 @@ document.getElementById('tabPanel').addEventListener('click', (e)=>{
   const del = e.target.closest('[data-action="delete"]');
   if(del){ deleteConversation(del.dataset.id); return; }
   const back = e.target.closest('[data-action="back"]');
-  if(back){ openDetailId = null; renderActiveTab(); return; }
+  if(back){ openDetailId = null; editingRow = null; renderActiveTab(); return; }
   const person = e.target.closest('[data-action="select-person"]');
   if(person){ selectedPerson = (selectedPerson===person.dataset.name) ? null : person.dataset.name; renderPeople(); return; }
+  const filterBtn = e.target.closest('[data-action="filter"]');
+  if(filterBtn){ actionsFilter = filterBtn.dataset.filter; renderOpenActions(); return; }
+  const editBtn = e.target.closest('[data-action="edit-row"]');
+  if(editBtn){ editingRow = {conv:editBtn.dataset.conv, section:editBtn.dataset.section, id:editBtn.dataset.id}; openConversationDetail(openDetailId); return; }
+  const cancelBtn = e.target.closest('[data-action="cancel-edit"]');
+  if(cancelBtn){ editingRow = null; openConversationDetail(openDetailId); return; }
+  const saveBtn = e.target.closest('[data-action="save-edit"]');
+  if(saveBtn){
+    const section = saveBtn.dataset.section, convId = saveBtn.dataset.conv, id = saveBtn.dataset.id;
+    const row = document.querySelector(`[data-edit-section="${section}"][data-edit-conv="${convId}"][data-edit-id="${id}"]`);
+    if(row) saveEditedRow(section, convId, id, row);
+    return;
+  }
+  const archiveBtn = e.target.closest('[data-action="archive-dup"]');
+  if(archiveBtn){ archiveItem(archiveBtn.dataset.conv, archiveBtn.dataset.section, archiveBtn.dataset.id); return; }
+  const unarchiveBtn = e.target.closest('[data-action="unarchive"]');
+  if(unarchiveBtn){ unarchiveItem(unarchiveBtn.dataset.conv, unarchiveBtn.dataset.section, unarchiveBtn.dataset.id); return; }
   if(e.target.id === 'aiSearchBtn'){
     const q = document.getElementById('registerSearch').value.trim();
     if(q) performAiSearch(q);
@@ -1102,10 +1516,22 @@ document.getElementById('tabPanel').addEventListener('change', (e)=>{
   if(chk){ toggleTaskDone(chk.dataset.conv, chk.dataset.task, chk.checked).then(()=> openDetailId ? openConversationDetail(openDetailId) : renderActiveTab()); return; }
   const sel = e.target.closest('[data-action="set-status"]');
   if(sel){ setDecisionStatus(sel.dataset.conv, sel.dataset.decision, sel.value).then(()=> openDetailId ? openConversationDetail(openDetailId) : renderActiveTab()); return; }
+  const reassign = e.target.closest('[data-action-reassign]');
+  if(reassign){ reassignTask(reassign.dataset.conv, reassign.dataset.task, reassign.value.trim()); return; }
 });
 
 document.querySelectorAll('.tabbtn').forEach(b=>{
-  b.addEventListener('click', ()=>{ activeTab = b.dataset.tab; aiSearch = null; openDetailId = null; renderActiveTab(); });
+  b.addEventListener('click', ()=>{ activeTab = b.dataset.tab; aiSearch = null; openDetailId = null; editingRow = null; renderActiveTab(); });
+});
+document.querySelector('.tabbar').addEventListener('keydown', (e)=>{
+  if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  const buttons = Array.from(document.querySelectorAll('.tabbtn'));
+  const idx = buttons.indexOf(document.activeElement);
+  if(idx === -1) return;
+  e.preventDefault();
+  const next = e.key === 'ArrowRight' ? buttons[(idx+1)%buttons.length] : buttons[(idx-1+buttons.length)%buttons.length];
+  next.focus();
+  next.click();
 });
 
 document.getElementById('processBtn').addEventListener('click', processConversation);
@@ -1114,12 +1540,25 @@ document.getElementById('fileInput').addEventListener('change', (e)=>handleFileC
 document.getElementById('clearFileBtn').addEventListener('click', clearFile);
 document.getElementById('projectSelect').addEventListener('change', (e)=>switchProject(e.target.value));
 document.getElementById('newProjectBtn').addEventListener('click', createProject);
+document.getElementById('exportAllBtn').addEventListener('click', exportAllBackup);
+document.getElementById('importAllBtn').addEventListener('click', ()=>document.getElementById('importFileInput').click());
+document.getElementById('importFileInput').addEventListener('change', (e)=>{
+  if(e.target.files[0]) importAllBackup(e.target.files[0]);
+  e.target.value = '';
+});
+document.getElementById('userName').addEventListener('change', async (e)=>{
+  userName = e.target.value.trim();
+  const ok = await storageSet('siteline:username', userName, false);
+  if(!ok) flagStorageIssue();
+});
 
 /* ---------------------------------------------------------------- */
 /* INIT                                                                */
 /* ---------------------------------------------------------------- */
 async function init(){
   document.getElementById('convDate').value = todayISO();
+  userName = (await storageGet('siteline:username', false)) || '';
+  document.getElementById('userName').value = userName;
   await loadProjects();
   renderProjectSelect();
   await loadConversationsForProject();
